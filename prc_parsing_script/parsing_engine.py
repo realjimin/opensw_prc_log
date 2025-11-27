@@ -130,44 +130,34 @@ class ProcessEngine:
             
         return final_stats
 
-    # [기능 3] Top N 프로세스 비교 (현재 vs 5초 전)
+    # [기능 3] Top N 프로세스 비교 (현재 vs 5초 전) --> 시간 계산 대신 가장 최근 기록(Last In)을 비교 대상으로 사용
     def get_top_processes_comparison(self, top_n=5):
-        # 1. 현재 데이터 수집 및 카운팅
+        # 1. 현재 데이터 수집
         current_procs = self.data_manager.get_all_processes()
         current_time = time.time()
-        
-        # 이름별 개수 세기 (예: {'chrome': 10, 'bash': 5 ...})
         current_counts = Counter([p.name for p in current_procs])
         
-        # 2. 과거(5초 전) 데이터 찾기
+        # 2. 과거 데이터 가져오기 (History의 가장 마지막 요소가 직전 루프의 데이터임)
         past_counts = {}
-        target_time = current_time - 5.0
-        min_diff = float('inf')
+        if self.history:
+            # history[-1] 은 (timestamp, counts_dict) 튜플
+            _, past_counts = self.history[-1]
         
-        for timestamp, counts_dict in self.history:
-            diff = abs(timestamp - target_time)
-            if diff < min_diff:
-                min_diff = diff
-                past_counts = counts_dict
-        
-        if min_diff > 2.0: # 오차가 너무 크면(데이터가 없으면) 과거 데이터 없음 처리
-            past_counts = {}
-
-        # 3. 현재 가장 많은 프로세스 Top N 추출
+        # 3. Top N 추출
         top_list = current_counts.most_common(top_n)
         
-        # 4. 결과 조합 (이름, 현재개수, 과거개수)
+        # 4. 결과 조합
         result = []
         for name, curr_cnt in top_list:
-            past_cnt = past_counts.get(name, 0) # 과거 기록 없으면 0
+            past_cnt = past_counts.get(name, 0)
             result.append({
                 "name": name,
-                "current": curr_cnt, # 초록색 막대 데이터
-                "past": past_cnt,    # 노란색 막대 데이터
+                "current": curr_cnt,
+                "past": past_cnt,
                 "diff": curr_cnt - past_cnt
             })
             
-        # 5. 현재 상태를 히스토리에 저장
+        # 5. 현재 상태 저장
         self.history.append((current_time, dict(current_counts)))
         
         return result
