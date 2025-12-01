@@ -7,7 +7,7 @@ ROOT="/proc"
 DESH='|'
 nl=$'\n'
 
-RESULT="<Elapsed_time>${DESH}<PID>${DESH}<USER>${DESH}<MEM(kB)>${DESH}<MEMPERCENT>${DESH}<PATH>${DESH}<CMDLINE>${DESH}"
+RESULT="<Elapsed_time>${DESH}<PID>${DESH}<PPID>${DESH}<USER>${DESH}<MEM(kB)>${DESH}<MEMPERCENT>${DESH}<PATH>${DESH}<CMDLINE>${DESH}"
 
 CLK_TCK=$(getconf CLK_TCK)
 BOOTTIME=$(awk '/btime/ {print $2}' /proc/stat)
@@ -47,6 +47,12 @@ for PID in $(ls $ROOT | grep '^[0-9]\+$'); do
         _USER=$(grep "x:$_UID:" /etc/passwd | cut -d: -f1)
         [ -z "$_USER" ] && _USER="unknown"
     fi
+
+    # ------------------------------------------------
+    # PPID
+    # ------------------------------------------------
+    P_PPID=$(awk '{print $4}' "$STAT" 2>/dev/null)
+    [ -z "$P_PPID" ] && P_PPID="[Unknown]"
 
     # ------------------------------------------------
     # MEMORY USAGE (VmRSS in kB)
@@ -96,7 +102,7 @@ for PID in $(ls $ROOT | grep '^[0-9]\+$'); do
     # ------------------------------------------------
     # OUTPUT
     # ------------------------------------------------
-    LINE="${ELAPSED_TIME}${DESH}${PID}${DESH}${_USER}${DESH}${MEM_KB}${DESH}${MEM_PERCENT}${DESH}${RPATH}${DESH}${CMDLINE}"
+    LINE="${ELAPSED_TIME}${DESH}${PID}${DESH}${P_PPID}${DESH}${_USER}${DESH}${MEM_KB}${DESH}${MEM_PERCENT}${DESH}${RPATH}${DESH}${CMDLINE}"
     RESULT="${RESULT}${nl}${LINE}"
 done
 
