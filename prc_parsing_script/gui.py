@@ -223,14 +223,14 @@ class PLogSightApp:
             # 엔진 데이터: elapsed_time, pid, user, mem_kb, mem_percent, path, cmdline
             
             # PPID는 현재 쉘스크립트 파싱 결과에 없어서 0으로 표기하거나 추후 추가 필요
-            ppid = 0 
             
             # cmdline이 너무 길면 자르기
             cmd_display = p.cmdline if len(p.cmdline) < 40 else p.cmdline[:37] + "..."
             
+            # Treeview 순서: PID, PPID, TIME, USER, MEM, COMMAND, PATH
             self.tree.insert("", "end", values=(
                 p.pid,
-                ppid,
+                p.ppid,
                 p.elapsed_time,
                 p.user,
                 f"{p.mem_percent}%",
