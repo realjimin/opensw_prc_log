@@ -1,0 +1,17 @@
+# Developer Guide
+
+Operating System: rockylinux10
+
+## File Contents
+
+###parse_prc.sh
+
+A parsing script that parses process information
+
+### gui.py
+
+Configures the front-end screen and connects to the parsing engine
+
+### parsing_engine.py
+
+Serves as a back-end, automatically executing the parsing script, mapping parsed data into a list structure, and performing statistical calculations.
