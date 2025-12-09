@@ -1,17 +1,199 @@
-# Developer Guide
+📘 Developer Guide
 
-Operating System: rockylinux10
 
-## File Contents
+Operating System: Rocky Linux 10
+Project Name: Process Monitoring & Visualization Tool
 
-###parse_prc.sh
+1. Overview
 
-A parsing script that parses process information
+This project provides a lightweight process-monitoring system composed of:
 
-### gui.py
+A Bash parsing script (parse_prc.sh) that extracts raw process data from /proc.
 
-Configures the front-end screen and connects to the parsing engine
+A Python backend & GUI (gui.py + parsing_engine.py) that visualizes the parsed process information for end users.
 
-### parsing_engine.py
+The entire system is operated through a single command:
 
-Serves as a back-end, automatically executing the parsing script, mapping parsed data into a list structure, and performing statistical calculations.
+python3 gui.py
+
+2. File Structure & Responsibilities
+2.1 parse_prc.sh
+
+Role: Process data extractor
+
+Description:
+
+Reads process information directly from /proc/<pid>.
+
+Extracts the following fields:
+
+Elapsed Time
+
+PID
+
+User Name
+
+Memory Usage (RSS in kB and %)
+
+Parent PID (PPid)
+
+Executable Path
+
+Command Line
+
+Outputs each record in a pipe-delimited format (|) to ensure consistent parsing.
+
+Characteristics:
+
+Does not rely on external tools (pure /proc-based).
+
+Handles missing or invalid values gracefully ([Unknown]).
+
+Designed for stability even under high system load.
+
+2.2 parsing_engine.py
+
+Role: Parsing coordinator
+
+Description:
+
+Automatically executes parse_prc.sh.
+
+Converts the script’s pipe-delimited output into structured process entries.
+
+Performs lightweight preprocessing and validation.
+
+Supplies parsed results to the GUI.
+
+Notes:
+
+Contains no business logic related to GUI.
+
+Accessed only by gui.py.
+
+2.3 gui.py
+
+Role: Main execution entry point + Visualization frontend
+
+Description:
+
+Provides an interactive GUI for viewing process data.
+
+Displays each parsed process as a table row.
+
+Offers basic user conveniences such as:
+
+Data refresh
+
+Sorting
+
+Visual organization of fields
+
+Important:
+
+This is the only file the user executes.
+
+Automatically manages all interaction with parsing_engine.py.
+
+3. System Workflow
+[User] → runs gui.py
+gui.py → requests data from parsing_engine.py
+parsing_engine.py → executes parse_prc.sh
+parse_prc.sh → reads /proc and outputs '|' delimited rows
+gui.py → displays the processed output
+
+4. Output Format Specification
+
+parse_prc.sh outputs rows in the following strict format:
+
+<Elapsed>|<PID>|<USER>|<MEM_KB>|<MEM_%>|<PPID>|<PATH>|<CMDLINE>
+
+
+This ensures:
+
+No dependency on whitespace
+
+No interference from long command lines
+
+Consistent parsing across all environments
+
+5. Installation & Execution
+Requirements
+
+Rocky Linux 10
+
+Bash 4+
+
+Python 3.9+
+
+Setup
+chmod +x parse_prc.sh
+
+Run Application
+python3 gui.py
+
+6. Error Handling & Stability
+In parse_prc.sh
+
+Missing /proc/<pid>/exe → [Unknown]
+
+Empty cmdline → fallback to process name
+
+Invalid elapsed time → [Unknown]
+
+Missing memory metrics → safe defaults
+
+In parsing_engine.py
+
+Malformed lines skipped safely
+
+No dependency on tabs or whitespace
+
+In gui.py
+
+Displays “No Data” if script output is empty
+
+GUI will not crash due to malformed entries
+
+7. Extensibility
+
+Developers can extend:
+
+Shell script:
+
+Add CPU ticks / CPU usage
+
+Count open file descriptors
+
+Add thread count
+
+Engine:
+
+Summary statistics
+
+Result filtering
+
+GUI:
+
+Sorting buttons
+
+Search filters
+
+Memory usage charts
+
+8. Notes for Maintainability
+
+Do not change the output delimiter (|).
+
+Ensure compatibility with /proc layout on Linux 4.x+.
+
+Keep parsing logic minimal and forward-compatible.
+
+9. Execution Summary
+
+Only one command is needed:
+
+python3 gui.py
+
+
+Everything else runs automatically in the background.
