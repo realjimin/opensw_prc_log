@@ -1,0 +1,112 @@
+📗 User Guide
+
+Operating System: Rocky Linux 10
+Application Name: Process Monitoring & Visualization Tool
+Execution Method: GUI-based (Python)
+
+1. Introduction
+
+This tool provides an easy-to-use graphical interface for monitoring running processes on your Linux system.
+It displays key information such as:
+
+PID
+
+User
+
+Memory usage
+
+Elapsed time
+
+Parent PID
+
+Executable path
+
+Command line
+
+Designed for clarity and simplicity, the application is suitable for both developers and system operators.
+
+2. How to Run the Application
+Requirements
+
+Before running the tool, ensure the system has:
+
+Python 3.9 or higher
+
+Basic GUI support
+
+Execute permission for the parsing script
+
+Start the Application
+
+To launch the program, run:
+
+python3 gui.py
+
+
+There is no need to run any other script manually.
+The GUI automatically retrieves data from the system.
+
+3. Main Window Overview
+
+When the application starts, the main window displays a table containing process information.
+Each row represents one running process on the system.
+
+Displayed Columns
+
+The table includes the following fields:
+
+Field	Description
+Elapsed Time	How long the process has been running
+PID	Process ID
+User	Owner of the process
+Memory (kB)	Memory usage in kilobytes
+Memory (%)	Percentage of total system memory used
+PPID	Parent Process ID
+Path	Executable file location
+Command Line	Full command used to start the process
+4. Refreshing Data
+
+The GUI automatically retrieves updated process information each time you press the Refresh button (if provided).
+This allows you to monitor changes in real time.
+
+5. Sorting and Navigation (If enabled)
+
+Depending on the GUI version, you may sort rows by clicking column headers such as:
+
+PID
+
+User
+
+Memory usage
+
+Elapsed time
+
+This helps when locating processes of interest.
+
+6. Error Handling
+
+If the system cannot retrieve certain information (e.g., missing executable path), the application will show:
+
+[Unknown]
+
+
+This is normal behavior and does not indicate a failure.
+
+The GUI will continue operating even if some process entries contain incomplete data.
+
+7. Closing the Application
+
+To exit, simply close the window using your desktop environment’s standard close button.
+No additional cleanup is required.
+
+8. Notes
+
+The tool only reads system information and does not modify or terminate processes.
+
+Administrator privileges are not required, unless restricted by system security policies.
+
+Designed specifically for Rocky Linux 10, but may operate on similar Linux distributions.
+
+9. Support
+
+If you encounter issues or need enhancements, please contact your system administrator or development team.
